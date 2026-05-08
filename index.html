@@ -365,7 +365,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true'
         },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: chatMessages })
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1000, system: systemPrompt, messages: chatMessages })
       });
       const data = await res.json();
       removeTyping();
