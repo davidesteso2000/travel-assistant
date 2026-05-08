@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#C4774A">
+<link rel="manifest" href="manifest.json">
+<title>Asistente de Viaje</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sand: #F5F0E8; --sand-dark: #E8E0CC;
+  --terra: #C4774A; --terra-dark: #9A5530;
+  --ink: #1C1917; --ink-muted: #6B6560;
+  --white: #FDFCF9; --danger: #E24B4A;
+}
+body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 480px; margin: 0 auto; min-height: 100vh; font-size: 14px; color: var(--ink); }
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+#home { align-items: center; justify-content: center; padding: 2rem; gap: 1rem; }
+.home-logo { font-size: 52px; margin-bottom: 0.5rem; }
+.home-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
+.home-sub { font-size: 13px; color: var(--ink-muted); text-align: center; margin-bottom: 1.5rem; }
+.home-btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; }
+.home-btn.client { background: var(--terra); color: white; }
+.home-btn.admin { background: var(--white); color: var(--ink); border: 1px solid var(--sand-dark); margin-top: 10px; }
+.home-btn:active { opacity: 0.85; }
+#pin-screen { align-items: center; justify-content: center; padding: 2rem; }
+.back-link { align-self: flex-start; background: none; border: none; font-size: 13px; color: var(--terra); font-weight: 500; cursor: pointer; font-family: inherit; margin-bottom: 1.5rem; }
+.pin-logo { font-size: 48px; margin-bottom: 0.75rem; }
+.pin-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.pin-sub { font-size: 13px; color: var(--ink-muted); margin-bottom: 2rem; }
+.pin-card { background: var(--white); border-radius: 24px; padding: 1.75rem; width: 100%; border: 1px solid var(--sand-dark); }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 1.25rem; }
+.pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--sand-dark); background: transparent; transition: all 0.2s; }
+.pin-dot.filled { background: var(--terra); border-color: var(--terra); transform: scale(1.1); }
+.pin-error { font-size: 12px; color: var(--danger); text-align: center; min-height: 16px; margin-bottom: 0.75rem; font-weight: 500; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.num-btn { background: var(--sand); border: none; border-radius: 14px; height: 58px; font-size: 22px; font-weight: 500; color: var(--ink); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; }
+.num-btn:active { background: var(--sand-dark); transform: scale(0.93); }
+.num-btn.del { font-size: 18px; color: var(--ink-muted); }
+.num-btn.enter { background: var(--terra); color: white; font-size: 15px; font-weight: 700; }
+#chat-screen { background: var(--sand); }
+.chat-header { background: var(--white); border-bottom: 1px solid var(--sand-dark); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.header-avatar { width: 42px; height: 42px; background: var(--terra); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.header-info { flex: 1; }
+.header-name { font-size: 15px; font-weight: 600; }
+.header-trip { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
+.header-exit { background: none; border: none; font-size: 12px; color: var(--ink-muted); cursor: pointer; font-family: inherit; }
+.messages-area { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+.messages-area::-webkit-scrollbar { width: 0; }
+.msg-row { display: flex; align-items: flex-end; gap: 8px; animation: msgIn 0.3s ease; }
+.msg-row.user { flex-direction: row-reverse; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg-avatar { width: 28px; height: 28px; border-radius: 10px; background: var(--terra); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.bubble { max-width: 78%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.6; }
+.bubble.bot { background: var(--white); border-bottom-left-radius: 6px; border: 1px solid var(--sand-dark); color: var(--ink); }
+.bubble.user { background: var(--terra); border-bottom-right-radius: 6px; color: white; }
+.typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px !important; }
+.typing-dot { width: 7px; height: 7px; background: var(--sand-dark); border-radius: 50%; animation: typing 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+.chat-input-area { background: var(--white); border-top: 1px solid var(--sand-dark); padding: 12px 1rem; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
+.chat-input { flex: 1; border: 1.5px solid var(--sand-dark); border-radius: 22px; padding: 10px 16px; font-size: 14px; color: var(--ink); background: var(--sand); outline: none; resize: none; line-height: 1.4; max-height: 100px; font-family: inherit; }
+.chat-input:focus { border-color: var(--terra); }
+.chat-input::placeholder { color: var(--ink-muted); }
+.send-btn { width: 44px; height: 44px; background: var(--terra); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.send-btn:active { transform: scale(0.92); background: var(--terra-dark); }
+.send-icon { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#admin-login { align-items: center; justify-content: center; padding: 2rem; }
+.login-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: var(--ink-muted); margin-bottom: 2rem; }
+.login-card { background: var(--white); border-radius: 20px; padding: 1.75rem; width: 100%; border: 1px solid var(--sand-dark); }
+.field-label { font-size: 12px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
+.field-input { width: 100%; border: 1.5px solid var(--sand-dark); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--ink); background: var(--sand); outline: none; margin-bottom: 1rem; font-family: inherit; }
+.field-input:focus { border-color: var(--terra); }
+.login-err { font-size: 12px; color: var(--danger); min-height: 16px; margin-bottom: 0.75rem; }
+.btn-primary { width: 100%; background: var(--terra); color: white; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-primary:active { background: var(--terra-dark); }
+#admin-dash { background: var(--sand); }
+.top-bar { background: var(--white); border-bottom: 1px solid var(--sand-dark); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.top-bar-title { font-size: 16px; font-weight: 600; }
+.top-bar-btn { font-size: 12px; color: var(--ink-muted); background: none; border: none; cursor: pointer; font-family: inherit; }
+.dash-content { padding: 1.25rem; overflow-y: auto; flex: 1; }
+.section-title { font-size: 12px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.75rem; }
+.btn-new { width: 100%; background: var(--terra); color: white; border: none; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; margin-bottom: 1.25rem; }
+.btn-new:active { background: var(--terra-dark); }
+.trip-card { background: var(--white); border: 1px solid var(--sand-dark); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 10px; }
+.trip-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+.trip-meta { font-size: 12px; color: var(--ink-muted); margin-bottom: 10px; }
+.trip-pin { display: inline-flex; align-items: center; gap: 6px; background: var(--sand); border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: 600; color: var(--terra-dark); margin-bottom: 10px; }
+.trip-actions { display: flex; gap: 8px; }
+.btn-sm { flex: 1; padding: 7px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; border: 1px solid var(--sand-dark); background: var(--sand); color: var(--ink); }
+.btn-sm.danger { color: var(--danger); border-color: #F7C1C1; background: #FCEBEB; }
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--ink-muted); font-size: 13px; }
+.loading { text-align: center; padding: 1rem; color: var(--ink-muted); font-size: 13px; }
+.config-card { background: var(--white); border: 1px solid var(--sand-dark); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+.config-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.config-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 0.75rem; }
+.config-row { display: flex; gap: 8px; }
+.config-input { flex: 1; border: 1.5px solid var(--sand-dark); border-radius: 10px; padding: 9px 12px; font-size: 13px; color: var(--ink); background: var(--sand); outline: none; font-family: inherit; }
+.config-input:focus { border-color: var(--terra); }
+.config-saved { font-size: 12px; color: var(--terra); margin-top: 6px; min-height: 16px; }
+#admin-detail { background: var(--sand); }
+.detail-content { padding: 1.25rem; overflow-y: auto; flex: 1; }
+.detail-trip-name { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.detail-pin { display: inline-flex; align-items: center; gap: 6px; background: var(--sand); border-radius: 8px; padding: 5px 12px; font-size: 14px; font-weight: 700; color: var(--terra-dark); margin-bottom: 1.5rem; }
+.doc-item { background: var(--white); border: 1px solid var(--sand-dark); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.doc-icon { width: 36px; height: 36px; background: #FAECE7; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.doc-info { flex: 1; }
+.doc-name { font-weight: 500; font-size: 13px; }
+.doc-size { font-size: 11px; color: var(--ink-muted); }
+.doc-del { background: none; border: none; color: var(--ink-muted); cursor: pointer; font-size: 16px; padding: 4px; }
+.upload-area { border: 2px dashed var(--sand-dark); border-radius: 14px; padding: 1.5rem; text-align: center; cursor: pointer; margin-bottom: 1rem; transition: border-color 0.2s; }
+.upload-area:hover { border-color: var(--terra); }
+.upload-area input { display: none; }
+.upload-label { font-size: 13px; color: var(--ink-muted); cursor: pointer; }
+.upload-label span { color: var(--terra); font-weight: 600; }
+.upload-progress { font-size: 12px; color: var(--terra); text-align: center; margin-top: 6px; min-height: 16px; }
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(28,25,23,0.6); z-index: 100; align-items: flex-end; justify-content: center; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--white); border-radius: 24px 24px 0 0; padding: 1.5rem; width: 100%; max-width: 480px; }
+.modal-title { font-size: 17px; font-weight: 600; margin-bottom: 1.25rem; }
+.modal-actions { display: flex; gap: 10px; margin-top: 1rem; }
+.btn-cancel { flex: 1; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; border: 1px solid var(--sand-dark); background: var(--sand); color: var(--ink); }
+.btn-save { flex: 1; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; background: var(--terra); color: white; }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="home">
+  <div class="home-logo">🧳</div>
+  <div class="home-title">Bienvenido</div>
+  <div class="home-sub">¿Cómo quieres acceder?</div>
+  <button class="home-btn client" onclick="show('pin-screen')">Soy viajero</button>
+  <button class="home-btn admin" onclick="show('admin-login')">Acceso administrador</button>
+</div>
+
+<div class="screen" id="pin-screen">
+  <button class="back-link" style="margin:1.5rem 1.5rem 0" onclick="show('home')">← Volver</button>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem 2rem">
+    <div class="pin-logo">✈️</div>
+    <div class="pin-title">Tu guía de viaje</div>
+    <div class="pin-sub">Introduce el código de tu viaje</div>
+    <div class="pin-card">
+      <div class="pin-dots">
+        <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+        <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+      </div>
+      <div class="pin-error" id="pin-error"></div>
+      <div class="numpad">
+        <button class="num-btn" onclick="addDigit('1')">1</button>
+        <button class="num-btn" onclick="addDigit('2')">2</button>
+        <button class="num-btn" onclick="addDigit('3')">3</button>
+        <button class="num-btn" onclick="addDigit('4')">4</button>
+        <button class="num-btn" onclick="addDigit('5')">5</button>
+        <button class="num-btn" onclick="addDigit('6')">6</button>
+        <button class="num-btn" onclick="addDigit('7')">7</button>
+        <button class="num-btn" onclick="addDigit('8')">8</button>
+        <button class="num-btn" onclick="addDigit('9')">9</button>
+        <button class="num-btn del" onclick="delDigit()">⌫</button>
+        <button class="num-btn" onclick="addDigit('0')">0</button>
+        <button class="num-btn enter" onclick="checkPin()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="chat-screen">
+  <div class="chat-header">
+    <div class="header-avatar">🧳</div>
+    <div class="header-info">
+      <div class="header-name">Asistente de viaje</div>
+      <div class="header-trip" id="chat-trip-name"></div>
+    </div>
+    <button class="header-exit" onclick="exitChat()">Salir</button>
+  </div>
+  <div class="messages-area" id="messages"></div>
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="msg-input" placeholder="Escribe tu pregunta..." rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" onclick="sendMessage()">
+      <svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+</div>
+
+<div class="screen" id="admin-login">
+  <button class="back-link" style="margin:1.5rem 1.5rem 0" onclick="show('home')">← Volver</button>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem 2rem">
+    <div class="login-title">Panel de administración</div>
+    <div class="login-sub">Acceso exclusivo para gestores</div>
+    <div class="login-card">
+      <label class="field-label">Usuario</label>
+      <input class="field-input" id="user-input" type="text" placeholder="admin" />
+      <label class="field-label">Contraseña</label>
+      <input class="field-input" id="pass-input" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      <div class="login-err" id="login-err"></div>
+      <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="admin-dash">
+  <div class="top-bar">
+    <div class="top-bar-title">Panel de admin</div>
+    <button class="top-bar-btn" onclick="doLogout()">Cerrar sesión</button>
+  </div>
+  <div class="dash-content">
+    <div class="config-card">
+      <div class="config-title">🔑 Clave API de Anthropic</div>
+      <div class="config-sub">Introduce tu clave para activar el asistente.</div>
+      <div class="config-row">
+        <input class="config-input" id="api-key-field" type="password" placeholder="sk-ant-..." />
+        <button class="btn-sm" onclick="saveApiKey()">Guardar</button>
+      </div>
+      <div class="config-saved" id="config-saved"></div>
+    </div>
+    <button class="btn-new" onclick="openNewTrip()">+ Nuevo viaje</button>
+    <div class="section-title">Viajes creados</div>
+    <div id="trip-list"></div>
+  </div>
+</div>
+
+<div class="screen" id="admin-detail">
+  <div class="top-bar">
+    <button class="top-bar-btn" onclick="show('admin-dash');loadTrips()">← Volver</button>
+  </div>
+  <div class="detail-content">
+    <div class="detail-trip-name" id="detail-name"></div>
+    <div class="detail-pin" id="detail-pin"></div>
+    <div class="section-title">Documentos</div>
+    <div id="doc-list"></div>
+    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept=".pdf" multiple onchange="handleFiles(event)" />
+      <div class="upload-label">📄 <span>Selecciona PDFs</span> para subir</div>
+    </div>
+    <div class="upload-progress" id="upload-progress"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-new">
+  <div class="modal">
+    <div class="modal-title">Nuevo viaje</div>
+    <label class="field-label">Nombre del viaje</label>
+    <input class="field-input" id="trip-name-input" type="text" placeholder="Ej: Roma — Julio 2025" />
+    <label class="field-label">PIN de acceso (4 dígitos)</label>
+    <input class="field-input" id="trip-pin-input" type="text" maxlength="4" placeholder="Ej: 3812" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveTrip()">Crear viaje</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  const SUPABASE_URL = 'https://hocqxzkwawdraemqexvn.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvY3F4emt3YXdkcmFlbXFleHZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDA3MTAsImV4cCI6MjA5MzcxNjcxMH0.rMWxijt8ca5CbnLmEUogojvUoXvDqFtLSzZpdo5c4cE';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = '1234';
+
+  let currentTripId = null;
+  let currentTrip = null;
+  let pin = '';
+  let chatMessages = [];
+  let anthropicKey = '';
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function addDigit(d) {
+    if (pin.length >= 4) return;
+    pin += d; updateDots();
+    document.getElementById('pin-error').textContent = '';
+  }
+  function delDigit() { pin = pin.slice(0, -1); updateDots(); }
+  function updateDots() {
+    for (let i = 0; i < 4; i++)
+      document.getElementById('d' + i).classList.toggle('filled', i < pin.length);
+  }
+  async function checkPin() {
+    if (pin.length < 4) { document.getElementById('pin-error').textContent = 'Introduce 4 dígitos'; return; }
+    document.getElementById('pin-error').textContent = 'Verificando...';
+    const { data } = await db.from('trips').select('*').eq('pin', pin).single();
+    if (data) { openChat(data); }
+    else { document.getElementById('pin-error').textContent = 'Código incorrecto, inténtalo de nuevo'; pin = ''; updateDots(); }
+  }
+
+  async function openChat(trip) {
+    currentTrip = trip;
+    chatMessages = [];
+    document.getElementById('chat-trip-name').textContent = trip.name;
+    document.getElementById('messages').innerHTML = '';
+    show('chat-screen');
+    const { data: cfg } = await db.from('config').select('value').eq('key', 'anthropic_key').single();
+    anthropicKey = cfg ? cfg.value : '';
+    const { data: docs } = await db.from('documents').select('id, name').eq('trip_id', trip.id);
+    const hasDocs = docs && docs.length > 0;
+    if (!anthropicKey) {
+      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. El sistema aún no está configurado. Contacta con el administrador.`);
+    } else if (!hasDocs) {
+      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
+    } else {
+      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. Tengo ${docs.length} documento${docs.length > 1 ? 's' : ''} con información de tu viaje. ¿En qué te puedo ayudar?`);
+    }
+  }
+
+  function exitChat() { pin = ''; updateDots(); show('pin-screen'); }
+
+  function addBotMessage(html) {
+    const area = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+    row.innerHTML = `<div class="msg-avatar">🧳</div><div class="bubble bot">${html}</div>`;
+    area.appendChild(row); area.scrollTop = area.scrollHeight;
+  }
+  function addUserMessage(text) {
+    const area = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row user';
+    row.innerHTML = `<div class="bubble user">${text}</div>`;
+    area.appendChild(row); area.scrollTop = area.scrollHeight;
+  }
+  function showTyping() {
+    const area = document.getElementById('messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row bot'; row.id = 'typing';
+    row.innerHTML = `<div class="msg-avatar">🧳</div><div class="bubble bot typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    area.appendChild(row); area.scrollTop = area.scrollHeight;
+  }
+  function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+  function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+  function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+  async function sendMessage() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = ''; input.style.height = 'auto';
+    addUserMessage(text);
+    chatMessages.push({ role: 'user', content: text });
+    showTyping();
+    if (!anthropicKey) { removeTyping(); addBotMessage('El asistente no está configurado. Contacta con el administrador.'); return; }
+    const { data: docs } = await db.from('documents').select('content, name').eq('trip_id', currentTrip.id);
+    let context = docs && docs.length > 0 ? docs.map(d => `--- ${d.name} ---\n${d.content}`).join('\n\n') : '';
+    const systemPrompt = context
+      ? `Eres un asistente de viaje amigable y cercano para el viaje "${currentTrip.name}". Responde siempre en el idioma del usuario. Sé conciso y claro. Usa SOLO la siguiente información para responder. Si la pregunta no tiene respuesta en los documentos, dilo honestamente.\n\nINFORMACIÓN DEL VIAJE:\n${context}`
+      : `Eres un asistente de viaje para "${currentTrip.name}". No tienes documentos cargados aún.`;
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': anthropicKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: systemPrompt, messages: chatMessages })
+      });
+      const data = await res.json();
+      removeTyping();
+      const reply = data.content?.[0]?.text || 'Lo siento, no pude obtener respuesta.';
+      chatMessages.push({ role: 'assistant', content: reply });
+      addBotMessage(reply.replace(/\n/g, '<br>'));
+    } catch (e) {
+      removeTyping();
+      addBotMessage('Error de conexión. Inténtalo de nuevo.');
+    }
+  }
+
+  function doLogin() {
+    const u = document.getElementById('user-input').value.trim();
+    const p = document.getElementById('pass-input').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      document.getElementById('login-err').textContent = '';
+      show('admin-dash'); loadApiKey(); loadTrips();
+    } else { document.getElementById('login-err').textContent = 'Usuario o contraseña incorrectos'; }
+  }
+  function doLogout() {
+    document.getElementById('user-input').value = '';
+    document.getElementById('pass-input').value = '';
+    show('home');
+  }
+
+  async function loadApiKey() {
+    const { data } = await db.from('config').select('value').eq('key', 'anthropic_key').single();
+    if (data) { document.getElementById('api-key-field').value = data.value; document.getElementById('config-saved').textContent = '✓ Clave guardada'; }
+  }
+  async function saveApiKey() {
+    const key = document.getElementById('api-key-field').value.trim();
+    if (!key) return;
+    await db.from('config').upsert({ key: 'anthropic_key', value: key });
+    document.getElementById('config-saved').textContent = '✓ Clave guardada correctamente';
+    setTimeout(() => document.getElementById('config-saved').textContent = '', 3000);
+  }
+
+  async function loadTrips() {
+    const list = document.getElementById('trip-list');
+    list.innerHTML = '<div class="loading">Cargando viajes...</div>';
+    const { data, error } = await db.from('trips').select('*, documents(id)').order('created_at', { ascending: false });
+    if (error || !data) { list.innerHTML = '<div class="empty-state">Error al cargar viajes.</div>'; return; }
+    if (data.length === 0) { list.innerHTML = '<div class="empty-state">No tienes viajes creados aún.<br>Pulsa "+ Nuevo viaje" para empezar.</div>'; return; }
+    list.innerHTML = data.map(t => `
+      <div class="trip-card">
+        <div class="trip-name">${t.name}</div>
+        <div class="trip-meta">${t.documents ? t.documents.length : 0} documento${t.documents && t.documents.length !== 1 ? 's' : ''}</div>
+        <div class="trip-pin">🔑 PIN: ${t.pin}</div>
+        <div class="trip-actions">
+          <button class="btn-sm" onclick="openDetail('${t.id}','${t.name}','${t.pin}')">📂 Documentos</button>
+          <button class="btn-sm danger" onclick="deleteTrip('${t.id}')">🗑 Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openNewTrip() {
+    document.getElementById('trip-name-input').value = '';
+    document.getElementById('trip-pin-input').value = '';
+    document.getElementById('modal-new').classList.add('open');
+  }
+  function closeModal() { document.getElementById('modal-new').classList.remove('open'); }
+
+  async function saveTrip() {
+    const name = document.getElementById('trip-name-input').value.trim();
+    const pin = document.getElementById('trip-pin-input').value.trim();
+    if (!name || pin.length !== 4 || isNaN(pin)) { alert('Introduce un nombre y un PIN de 4 dígitos.'); return; }
+    const { error } = await db.from('trips').insert({ name, pin });
+    if (error) { alert(error.message.includes('unique') ? 'Ese PIN ya está en uso.' : 'Error al crear el viaje.'); return; }
+    closeModal(); loadTrips();
+  }
+
+  async function deleteTrip(id) {
+    if (!confirm('¿Seguro que quieres eliminar este viaje?')) return;
+    await db.from('trips').delete().eq('id', id);
+    loadTrips();
+  }
+
+  async function openDetail(id, name, tripPin) {
+    currentTripId = id;
+    document.getElementById('detail-name').textContent = name;
+    document.getElementById('detail-pin').textContent = '🔑 PIN: ' + tripPin;
+    show('admin-detail'); loadDocs();
+  }
+
+  async function loadDocs() {
+    const list = document.getElementById('doc-list');
+    list.innerHTML = '<div class="loading">Cargando documentos...</div>';
+    const { data } = await db.from('documents').select('*').eq('trip_id', currentTripId);
+    if (!data || data.length === 0) { list.innerHTML = '<div class="empty-state" style="margin-bottom:1rem">No hay documentos aún.</div>'; return; }
+    list.innerHTML = data.map(d => `
+      <div class="doc-item">
+        <div class="doc-icon">📄</div>
+        <div class="doc-info"><div class="doc-name">${d.name}</div><div class="doc-size">${d.size}</div></div>
+        <button class="doc-del" onclick="deleteDoc('${d.id}')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  async function extractPdfText(file) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        fullText += content.items.map(item => item.str).join(' ') + '\n';
+      }
+      return fullText.trim();
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function handleFiles(event) {
+    const files = Array.from(event.target.files);
+    const progress = document.getElementById('upload-progress');
+    for (const file of files) {
+      progress.textContent = `Procesando ${file.name}...`;
+      const size = file.size < 1024*1024 ? (file.size/1024).toFixed(0)+' KB' : (file.size/1024/1024).toFixed(1)+' MB';
+      const text = await extractPdfText(file);
+      await db.from('documents').insert({ trip_id: currentTripId, name: file.name, size, content: text });
+    }
+    progress.textContent = '✓ PDF procesado y guardado correctamente';
+    setTimeout(() => progress.textContent = '', 3000);
+    event.target.value = ''; loadDocs();
+  }
+
+  async function deleteDoc(id) {
+    await db.from('documents').delete().eq('id', id);
+    loadDocs();
+  }
+</script>
+</body>
+</html>
