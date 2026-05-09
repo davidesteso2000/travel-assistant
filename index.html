@@ -354,10 +354,11 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     input.value = ''; input.style.height = 'auto';
     addUserMessage(text);
     chatMessages.push({ role: 'user', content: text });
-    if (!userName && text.split(' ').length <= 3) {
-      userName = text.trim();
-      localStorage.setItem('travel_user_name', userName);
-    }
+    if (!userName) {
+  const nombreMatch = text.match(/(?:me llamo|soy|mi nombre es|llámame)\s+(\w+)/i);
+  const nombre = nombreMatch ? nombreMatch[1] : (text.split(' ').length <= 2 ? text.trim() : null);
+  if (nombre) { userName = nombre; localStorage.setItem('travel_user_name', userName); }
+}
     showTyping();
     if (!anthropicKey) { removeTyping(); addBotMessage('El asistente no está configurado. Contacta con el administrador.'); return; }
     const { data: docs } = await db.from('documents').select('content, name').eq('trip_id', currentTrip.id);
