@@ -271,6 +271,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
   let currentTrip = null;
   let pin = '';
   let chatMessages = [];
+let userName = localStorage.getItem('travel_user_name') || '';
   let anthropicKey = '';
 
   function show(id) {
@@ -311,7 +312,10 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     } else if (!hasDocs) {
       addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
     } else {
-      addBotMessage(`¡Hola! Soy tu asistente para el viaje a <strong>${trip.name}</strong>. Antes de empezar, ¿cómo te llamas? ¿Y en qué puedo ayudarte con nuestro viaje? 😊`);
+if (userName) {
+  addBotMessage(`¡Hola de nuevo, ${userName}! 😊 ¿En qué te puedo ayudar hoy?`);
+} else {
+  addBotMessage(`¡Hola! Soy tu asistente para el viaje <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
     }
   }
 
@@ -349,6 +353,10 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     input.value = ''; input.style.height = 'auto';
     addUserMessage(text);
     chatMessages.push({ role: 'user', content: text });
+    if (!userName && text.split(' ').length <= 3) {
+  userName = text.trim();
+  localStorage.setItem('travel_user_name', userName);
+}
     showTyping();
     if (!anthropicKey) { removeTyping(); addBotMessage('El asistente no está configurado. Contacta con el administrador.'); return; }
     const { data: docs } = await db.from('documents').select('content, name').eq('trip_id', currentTrip.id);
@@ -361,13 +369,19 @@ ESTILO DE RESPUESTA:
 - Si te preguntan por una persona, di su nombre. Si te preguntan por un horario, di el horario. No copies párrafos enteros del documento.
 - Usa un tono cercano y natural, como si fueras un amigo que conoce bien el viaje.
 - Si la respuesta tiene varios datos, usa una lista corta. Si es un solo dato, una frase es suficiente.
-- Cuando el usuario te diga su nombre, salúdale con una frase corta y natural, por ejemplo: "¡Hola David! ¿En qué te puedo ayudar?" Sin explicar lo que puedes hacer ni listar temas.
+- Cuando el usuario te diga su nombre, salúdale con una frase corta y natural tipo "¡Hola David! ¿En qué te puedo ayudar?", sin explicar lo que puedes hacer ni listar temas guárdalo mentalmente y úsalo durante toda la conversación. Responde con una frase corta 
 
 FUENTES:
 - Tu prioridad SIEMPRE es la documentación del viaje que tienes a continuación.
 - Si la pregunta NO tiene respuesta en la documentación, busca en internet y dilo claramente: "En la documentación no encuentro eso, pero según internet..."
 - No des información que extraigas de internet y si no la encuentras en varias fuentes.
 - Nunca inventes información.
+
+const today = new Date();
+const tripStart = new Date('2026-06-21');
+const tripEnd = new Date('2026-06-26');
+let tripPhase = today < tripStart ? 'antes' : today > tripEnd ? 'después' : 'durante';
+FASE DEL VIAJE: El viaje es del 21 al 26 de junio de 2026. Hoy es ${new Date().toLocaleDateString('es-ES')}. La fase actual es: ${tripPhase}. Adapta el tono: antes del viaje habla en futuro con entusiasmo, durante en presente, después en pasado con cariño.
 
 DOCUMENTACIÓN DEL VIAJE:
 ${context}`
