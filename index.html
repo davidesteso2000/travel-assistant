@@ -21,29 +21,67 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
 .screen.active { display: flex; flex-direction: column; }
 
 /* HOME */
-#home { position: relative; overflow: hidden; padding: 0; justify-content: center; }
-#home-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+#home { position: relative; overflow: hidden; padding: 0; min-height: 100vh; }
+#home-bg { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 0; }
 #home-content {
-  position: relative; z-index: 1; width: 100%;
-  padding: 1rem 1.5rem 2rem;
-  display: flex; flex-direction: column; align-items: center; gap: 0.85rem;
+  position: relative; z-index: 2; width: 100%;
+  min-height: 100vh;
+  padding: 2rem 1.75rem 3rem;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 1rem; justify-content: flex-end;
   background: none;
 }
-#home-name-text { font-size: 28px; font-weight: 800; color: var(--ink); text-align: center; margin: 0; }
-#home-name-text span { color: var(--terra); }
-#home-subtitle { font-size: 13px; color: var(--ink-muted); text-align: center; margin: 0; }
-#home-status {
-  display: flex; align-items: center; gap: 6px;
-  background: white; border-radius: 20px; padding: 6px 14px;
-  font-size: 12px; font-weight: 500; color: var(--ink);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+/* ELEMENTO 1: Saludo principal */
+#home-greeting {
+  font-size: 38px; font-weight: 800;
+  color: white; text-align: left; margin: 0;
+  line-height: 1.15;
 }
-#home-status-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; display: inline-block; }
-.home-btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; }
-.home-btn.client { background: var(--terra); color: white; }
-.home-btn.admin { background: var(--white); color: var(--ink); border: 1px solid var(--sand-dark); }
-.home-btn:active { opacity: 0.85; }
-#home-footer { font-size: 11px; color: var(--ink-muted); }
+#home-greeting .orange { color: #E8956A; }
+
+/* ELEMENTO 2: Subtítulo */
+#home-subtitle {
+  font-size: 15px; color: rgba(255,255,255,0.8);
+  text-align: left; margin: 0;
+}
+
+/* ELEMENTO 3: Indicador estado */
+#home-status {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px; padding: 7px 16px;
+  font-size: 13px; font-weight: 500; color: white;
+}
+#home-status-dot { width: 9px; height: 9px; background: #E8956A; border-radius: 50%; display: inline-block; }
+
+/* ELEMENTO 4: Botón viajero */
+#btn-viajero {
+  width: 100%; padding: 16px 20px; border-radius: 50px;
+  font-size: 16px; font-weight: 600; cursor: pointer;
+  font-family: inherit; border: none;
+  background: linear-gradient(135deg, #E8956A, #C4774A);
+  color: white;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+/* ELEMENTO 5: Botón admin */
+#btn-admin {
+  width: 100%; padding: 16px 20px; border-radius: 50px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: inherit;
+  background: rgba(255,255,255,0.1);
+  color: white; border: 1px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ELEMENTO 6: Pie de página */
+#home-footer {
+  font-size: 12px; color: rgba(255,255,255,0.4);
+  text-align: center; width: 100%;
+}
 
 #pin-screen { align-items: center; justify-content: center; padding: 2rem; }
 .back-link { align-self: flex-start; background: none; border: none; font-size: 13px; color: var(--terra); font-weight: 500; cursor: pointer; font-family: inherit; margin-bottom: 1.5rem; }
@@ -154,10 +192,10 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
   <div id="home-content">
 
     <!-- ELEMENTO 1: Saludo principal -->
-    <h1 id="home-greeting">¡Hola! Soy <strong>QWERTY</strong></h1>
+    <h1 id="home-greeting">¡Hola!<br>Soy <span class="name">QWERTY</span></h1>
 
     <!-- ELEMENTO 2: Subtítulo -->
-    <p id="home-subtitle">Tu asistente de viaje inteligente ✈️</p>
+    <p id="home-subtitle">Tu asistente de viaje inteligente</p>
 
     <!-- ELEMENTO 3: Indicador de estado -->
     <div id="home-status">
@@ -166,10 +204,16 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     </div>
 
     <!-- ELEMENTO 4: Botón viajero -->
-    <button id="btn-viajero" onclick="show('pin-screen')">Soy viajero →</button>
+    <button id="btn-viajero" onclick="show('pin-screen')">
+      <span>Soy viajero</span>
+      <span>→</span>
+    </button>
 
     <!-- ELEMENTO 5: Botón admin -->
-    <button id="btn-admin" onclick="show('admin-login')">👤 Acceso administrador →</button>
+    <button id="btn-admin" onclick="show('admin-login')">
+      <span>👤 Acceso administrador</span>
+      <span>→</span>
+    </button>
 
     <!-- ELEMENTO 6: Pie de página -->
     <div id="home-footer">🧳 Asistente de viaje inteligente</div>
