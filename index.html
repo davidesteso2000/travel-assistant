@@ -19,14 +19,32 @@
 body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 480px; margin: 0 auto; min-height: 100vh; font-size: 14px; color: var(--ink); }
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; flex-direction: column; }
-#home { align-items: center; justify-content: center; padding: 2rem; gap: 1rem; }
-.home-logo { font-size: 52px; margin-bottom: 0.5rem; }
-.home-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
-.home-sub { font-size: 13px; color: var(--ink-muted); text-align: center; margin-bottom: 1.5rem; }
+ 
+/* HOME */
+#home { position: relative; overflow: hidden; padding: 0; justify-content: flex-end; }
+#home-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+#home-content {
+  position: relative; z-index: 1; width: 100%;
+  padding: 2rem 1.5rem 2.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.85rem;
+  background: linear-gradient(to top, rgba(245,240,232,0.97) 60%, rgba(245,240,232,0.5) 100%);
+}
+#home-name-text { font-size: 28px; font-weight: 800; color: var(--ink); text-align: center; margin: 0; }
+#home-name-text span { color: var(--terra); }
+#home-subtitle { font-size: 13px; color: var(--ink-muted); text-align: center; margin: 0; }
+#home-status {
+  display: flex; align-items: center; gap: 6px;
+  background: white; border-radius: 20px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#home-status-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; display: inline-block; }
 .home-btn { width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; border: none; }
 .home-btn.client { background: var(--terra); color: white; }
-.home-btn.admin { background: var(--white); color: var(--ink); border: 1px solid var(--sand-dark); margin-top: 10px; }
+.home-btn.admin { background: var(--white); color: var(--ink); border: 1px solid var(--sand-dark); }
 .home-btn:active { opacity: 0.85; }
+#home-footer { font-size: 11px; color: var(--ink-muted); }
+ 
 #pin-screen { align-items: center; justify-content: center; padding: 2rem; }
 .back-link { align-self: flex-start; background: none; border: none; font-size: 13px; color: var(--terra); font-weight: 500; cursor: pointer; font-family: inherit; margin-bottom: 1.5rem; }
 .pin-logo { font-size: 48px; margin-bottom: 0.75rem; }
@@ -130,25 +148,22 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
 </style>
 </head>
 <body>
-
+ 
 <div class="screen active" id="home">
-  <div class="screen active" id="home" style="position:relative;overflow:hidden;padding:0;justify-content:flex-end;">
-  <img src="Fondo asistente.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" />
-  <div style="position:relative;z-index:1;width:100%;padding:2rem 1.5rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;">
-    <h1 style="font-size:26px;font-weight:800;color:#1C1917;text-align:center;margin:0;">
-      ¡Hola! Soy <span style="color:#C4774A;" id="home-name">tu asistente</span>
-    </h1>
-    <p style="font-size:14px;color:#6B6560;text-align:center;margin:0;">Tu asistente de viaje inteligente ✈️</p>
-    <div style="display:flex;align-items:center;gap:6px;background:white;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;color:#1C1917;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-      <span style="width:8px;height:8px;background:#22C55E;border-radius:50%;display:inline-block;"></span>
+  <img id="home-bg" src="Fondo asistente.webp" alt="" />
+  <div id="home-content">
+    <h1 id="home-name-text">¡Hola! Soy <span id="home-name">tu asistente</span></h1>
+    <p id="home-subtitle">Tu asistente de viaje inteligente ✈️</p>
+    <div id="home-status">
+      <span id="home-status-dot"></span>
       Listo para ayudarte
     </div>
     <button class="home-btn client" onclick="show('pin-screen')" style="margin-top:0.5rem;">Soy viajero →</button>
     <button class="home-btn admin" onclick="show('admin-login')">👤 Acceso administrador →</button>
-    <div style="font-size:11px;color:#6B6560;margin-top:0.5rem;">🧳 Asistente de viaje inteligente</div>
+    <div id="home-footer">🧳 Asistente de viaje inteligente</div>
   </div>
 </div>
-
+ 
 <div class="screen" id="pin-screen">
   <button class="back-link" style="margin:1.5rem 1.5rem 0" onclick="show('home')">← Volver</button>
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem 2rem">
@@ -178,7 +193,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     </div>
   </div>
 </div>
-
+ 
 <div class="screen" id="chat-screen">
   <div class="chat-header">
     <div class="header-avatar">🧳</div>
@@ -197,7 +212,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     </button>
   </div>
 </div>
-
+ 
 <div class="screen" id="admin-login">
   <button class="back-link" style="margin:1.5rem 1.5rem 0" onclick="show('home')">← Volver</button>
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem 2rem">
@@ -213,7 +228,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     </div>
   </div>
 </div>
-
+ 
 <div class="screen" id="admin-dash">
   <div class="top-bar">
     <div class="top-bar-title">Panel de admin</div>
@@ -234,7 +249,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     <div id="trip-list"></div>
   </div>
 </div>
-
+ 
 <div class="screen" id="admin-detail">
   <div class="top-bar">
     <button class="top-bar-btn" onclick="show('admin-dash');loadTrips()">← Volver</button>
@@ -251,7 +266,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     <div class="upload-progress" id="upload-progress"></div>
   </div>
 </div>
-
+ 
 <div class="modal-bg" id="modal-new">
   <div class="modal">
     <div class="modal-title">Nuevo viaje</div>
@@ -265,35 +280,39 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
     </div>
   </div>
 </div>
-
+ 
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
+ 
   const SUPABASE_URL = 'https://hocqxzkwawdraemqexvn.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvY3F4emt3YXdkcmFlbXFleHZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDA3MTAsImV4cCI6MjA5MzcxNjcxMH0.rMWxijt8ca5CbnLmEUogojvUoXvDqFtLSzZpdo5c4cE';
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
-
+ 
   const ADMIN_USER = 'david';
   const ADMIN_PASS = '1303';
-
+ 
   let currentTripId = null;
   let currentTrip = null;
   let pin = '';
   let chatMessages = [];
-let userName = localStorage.getItem('travel_user_name') || '';
-let lastPin = localStorage.getItem('travel_last_pin') || '';
-let isNewTrip = lastPin !== pin;  
-let anthropicKey = '';
-
+  let userName = localStorage.getItem('travel_user_name') || '';
+  let lastPin = localStorage.getItem('travel_last_pin') || '';
+  let anthropicKey = '';
+ 
+  function updateHomeName() {
+    const el = document.getElementById('home-name');
+    if (el) el.textContent = userName ? userName : 'tu asistente';
+  }
+ 
   function show(id) {
-    const name = localStorage.getItem('travel_user_name');
-const el = document.getElementById('home-name');
-if (el) el.textContent = name ? name : 'tu asistente';
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    if (id === 'home') updateHomeName();
   }
-
+ 
+  updateHomeName();
+ 
   function addDigit(d) {
     if (pin.length >= 4) return;
     pin += d; updateDots();
@@ -311,8 +330,9 @@ if (el) el.textContent = name ? name : 'tu asistente';
     if (data) { openChat(data); }
     else { document.getElementById('pin-error').textContent = 'Código incorrecto, inténtalo de nuevo'; pin = ''; updateDots(); }
   }
-
+ 
   async function openChat(trip) {
+    const isNewTrip = lastPin !== pin;
     currentTrip = trip;
     chatMessages = [];
     document.getElementById('chat-trip-name').textContent = trip.name;
@@ -326,20 +346,19 @@ if (el) el.textContent = name ? name : 'tu asistente';
       addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. El sistema aún no está configurado. Contacta con el administrador.`);
     } else if (!hasDocs) {
       addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
+    } else if (userName && !isNewTrip) {
+      addBotMessage(`¡Hola de nuevo, ${userName}! 😊 ¿En qué te puedo ayudar hoy?`);
+    } else if (userName && isNewTrip) {
+      localStorage.setItem('travel_last_pin', pin);
+      lastPin = pin;
+      addBotMessage(`¡Hola de nuevo, ${userName}! 😊 Bienvenido al viaje <strong>${trip.name}</strong>. ¿En qué te puedo ayudar?`);
     } else {
-if (userName && !isNewTrip) {
-  addBotMessage(`¡Hola de nuevo, ${userName}! 😊 ¿En qué te puedo ayudar hoy?`);
-} else if (userName && isNewTrip) {
-  localStorage.setItem('travel_last_pin', pin);
-  addBotMessage(`¡Hola de nuevo, ${userName}! 😊 Bienvenido al viaje <strong>${trip.name}</strong>. ¿En qué te puedo ayudar?`);
-      } else {
-        addBotMessage(`¡Hola! Soy tu asistente para el viaje <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
-      }
+      addBotMessage(`¡Hola! Soy tu asistente para el viaje <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
     }
   }
-
+ 
   function exitChat() { pin = ''; updateDots(); show('pin-screen'); }
-
+ 
   function addBotMessage(html) {
     const area = document.getElementById('messages');
     const row = document.createElement('div');
@@ -364,7 +383,7 @@ if (userName && !isNewTrip) {
   function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
   function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
   function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-
+ 
   async function sendMessage() {
     const input = document.getElementById('msg-input');
     const text = input.value.trim();
@@ -373,10 +392,14 @@ if (userName && !isNewTrip) {
     addUserMessage(text);
     chatMessages.push({ role: 'user', content: text });
     if (!userName) {
-  const nombreMatch = text.match(/(?:me llamo|soy|mi nombre es|llámame)\s+(\w+)/i);
-  const nombre = nombreMatch ? nombreMatch[1] : (text.split(' ').length <= 2 ? text.trim() : null);
-  if (nombre) { userName = nombre; localStorage.setItem('travel_user_name', userName); }
-}
+      const nombreMatch = text.match(/(?:me llamo|soy|mi nombre es|llámame)\s+(\w+)/i);
+      const nombre = nombreMatch ? nombreMatch[1] : (text.split(' ').length <= 2 ? text.trim() : null);
+      if (nombre) {
+        userName = nombre;
+        localStorage.setItem('travel_user_name', userName);
+        updateHomeName();
+      }
+    }
     showTyping();
     if (!anthropicKey) { removeTyping(); addBotMessage('El asistente no está configurado. Contacta con el administrador.'); return; }
     const { data: docs } = await db.from('documents').select('content, name').eq('trip_id', currentTrip.id);
@@ -387,7 +410,7 @@ if (userName && !isNewTrip) {
     const tripPhase = today < tripStart ? 'antes' : today > tripEnd ? 'después' : 'durante';
     const systemPrompt = context
       ? `Eres un asistente de viaje amigable y cercano para el viaje "${currentTrip.name}". Responde siempre en el idioma del usuario.
-
+ 
 ESTILO DE RESPUESTA:
 - Sé breve y directo. Responde exactamente lo que se pregunta, sin añadir información extra que no se ha pedido.
 - Si te preguntan por una persona, di su nombre. Si te preguntan por un horario, di el horario. No copies párrafos enteros del documento.
@@ -395,18 +418,17 @@ ESTILO DE RESPUESTA:
 - Si la respuesta tiene varios datos, usa una lista corta. Si es un solo dato, una frase es suficiente.
 - Si alguien pregunta por una frase o palabra en otro idioma, primero pregúntale si quiere la traducción, la pronunciación o ambas. No des las dos cosas a la vez sin que lo pida.
 - Cuando expliques un proceso con varios pasos (check-in, embarque, trámites, etc.), da UN solo paso cada vez y pregunta si lo ha completado antes de continuar con el siguiente.
-- Si el usuario responde con: "si", "sí", "listo", "hecho", "ya", "ok", "vale", "claro", o similares, interpreta SIEMPRE como: "He completado este paso" y procede INMEDIATAMENTE al siguiente paso sin dudas ni esperas adicionales
+- Si el usuario responde con: "si", "sí", "listo", "hecho", "ya", "ok", "vale", "claro", o similares, interpreta SIEMPRE como confirmación y procede al siguiente paso.
 - Cuando el usuario te diga su nombre, salúdale con una frase corta y natural, por ejemplo: "¡Hola David! ¿En qué te puedo ayudar?" Sin explicar lo que puedes hacer ni listar temas.
-
+ 
 FASE DEL VIAJE: El viaje es del 21 al 26 de junio de 2026. Hoy es ${new Date().toLocaleDateString('es-ES')}. Fase actual: ${tripPhase}. Adapta el tono: antes del viaje habla en futuro con entusiasmo, durante en presente, después en pasado con cariño.
-
+ 
 FUENTES:
-- Tu prioridad SIEMPRE es la documentación del viaje que tienes a continuación.
-- Está TERMINANTEMENTE PROHIBIDO dar precios, cotizaciones, estimaciones de coste o comparativas económicas de ningún tipo, ni del viaje actual ni de viajes similares. Si alguien pregunta por precios, responde de forma simple que esa información no la sabes, no digas que no te dejan dar esa información.
+- Está TERMINANTEMENTE PROHIBIDO dar precios, cotizaciones, estimaciones de coste o comparativas económicas de ningún tipo. Si alguien pregunta por precios, responde simplemente que no tienes esa información.
 - Los documentos del viaje son tu fuente PRINCIPAL y prioritaria. Busca siempre ahí primero.
-- Solo si no encuentras nada en los documentos despues de buscar y rebuscar, busca en internet como último recurso. Contrasta la información en al menos 2 fuentes antes de responder. Si las fuentes no coinciden, dilo. Indica siempre: "No he encontrado esto en tu documentación, pero según varias fuentes en internet..."
-- Si no encuentras la respuesta ni en los documentos ni en internet, di honestamente que no tienes esa información.
-
+- Solo si no encuentras nada en los documentos después de buscar bien, busca en internet como último recurso. Contrasta en al menos 2 fuentes. Indica siempre: "No he encontrado esto en tu documentación, pero según varias fuentes en internet..."
+- Si no encuentras la respuesta ni en los documentos ni en internet, dilo honestamente.
+ 
 DOCUMENTACIÓN DEL VIAJE:
 ${context}`
       : `Eres un asistente de viaje para "${currentTrip.name}". No tienes documentos del viaje cargados aún. Puedes usar internet para responder preguntas generales sobre el destino, pero indícalo siempre al viajero.`;
@@ -439,7 +461,7 @@ ${context}`
       addBotMessage('Error de conexión. Inténtalo de nuevo.');
     }
   }
-
+ 
   function doLogin() {
     const u = document.getElementById('user-input').value.trim();
     const p = document.getElementById('pass-input').value;
@@ -453,7 +475,7 @@ ${context}`
     document.getElementById('pass-input').value = '';
     show('home');
   }
-
+ 
   async function loadApiKey() {
     const { data } = await db.from('config').select('value').eq('key', 'anthropic_key').single();
     if (data) { document.getElementById('api-key-field').value = data.value; document.getElementById('config-saved').textContent = '✓ Clave guardada'; }
@@ -465,7 +487,7 @@ ${context}`
     document.getElementById('config-saved').textContent = '✓ Clave guardada correctamente';
     setTimeout(() => document.getElementById('config-saved').textContent = '', 3000);
   }
-
+ 
   async function loadTrips() {
     const list = document.getElementById('trip-list');
     list.innerHTML = '<div class="loading">Cargando viajes...</div>';
@@ -484,14 +506,14 @@ ${context}`
       </div>
     `).join('');
   }
-
+ 
   function openNewTrip() {
     document.getElementById('trip-name-input').value = '';
     document.getElementById('trip-pin-input').value = '';
     document.getElementById('modal-new').classList.add('open');
   }
   function closeModal() { document.getElementById('modal-new').classList.remove('open'); }
-
+ 
   async function saveTrip() {
     const name = document.getElementById('trip-name-input').value.trim();
     const pin = document.getElementById('trip-pin-input').value.trim();
@@ -500,20 +522,20 @@ ${context}`
     if (error) { alert(error.message.includes('unique') ? 'Ese PIN ya está en uso.' : 'Error al crear el viaje.'); return; }
     closeModal(); loadTrips();
   }
-
+ 
   async function deleteTrip(id) {
     if (!confirm('¿Seguro que quieres eliminar este viaje?')) return;
     await db.from('trips').delete().eq('id', id);
     loadTrips();
   }
-
+ 
   async function openDetail(id, name, tripPin) {
     currentTripId = id;
     document.getElementById('detail-name').textContent = name;
     document.getElementById('detail-pin').textContent = '🔑 PIN: ' + tripPin;
     show('admin-detail'); loadDocs();
   }
-
+ 
   async function loadDocs() {
     const list = document.getElementById('doc-list');
     list.innerHTML = '<div class="loading">Cargando documentos...</div>';
@@ -527,7 +549,7 @@ ${context}`
       </div>
     `).join('');
   }
-
+ 
   async function extractPdfText(file) {
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -543,7 +565,7 @@ ${context}`
       return '';
     }
   }
-
+ 
   async function handleFiles(event) {
     const files = Array.from(event.target.files);
     const progress = document.getElementById('upload-progress');
@@ -557,7 +579,7 @@ ${context}`
     setTimeout(() => progress.textContent = '', 3000);
     event.target.value = ''; loadDocs();
   }
-
+ 
   async function deleteDoc(id) {
     await db.from('documents').delete().eq('id', id);
     loadDocs();
