@@ -32,29 +32,27 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
   background: none;
 }
 
-/* ELEMENTO 1: Saludo principal */
+/* ELEMENTO 1: ¡Hola! */
+#home-hola {
+  font-size: 34px; font-weight: 200;
+  color: white; text-align: left; margin: 0;
+}
+
+/* ELEMENTO 2: Soy QWERTY */
 #home-greeting {
-  font-size: 42px;
-  font-weight: 700;
-  font-family: 'Satoshi', 'Inter', system-ui, sans-serif;
-  color: #FFFFFF;
-  text-align: left;
-  margin: 0;
-  line-height: 1.05;
-  letter-spacing: -1.5px;
+  font-size: 38px; font-weight: 800;
+  color: white; text-align: left; margin: 0;
+  line-height: 1.15;
 }
+#home-greeting .orange { color: #E8956A; }
 
-#home-greeting .orange {
-  color: #F3B04D;
-}
-
-/* ELEMENTO 2: Subtítulo */
+/* ELEMENTO 3: Subtítulo */
 #home-subtitle {
   font-size: 15px; color: rgba(255,255,255,0.8);
   text-align: left; margin: 0;
 }
 
-/* ELEMENTO 3: Indicador estado */
+/* ELEMENTO 4: Indicador estado */
 #home-status {
   display: flex; align-items: center; gap: 8px;
   background: rgba(255,255,255,0.15);
@@ -64,7 +62,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
 }
 #home-status-dot { width: 9px; height: 9px; background: #E8956A; border-radius: 50%; display: inline-block; }
 
-/* ELEMENTO 4: Botón viajero */
+/* ELEMENTO 5: Botón viajero */
 #btn-viajero {
   width: 100%; padding: 16px 20px; border-radius: 50px;
   font-size: 16px; font-weight: 600; cursor: pointer;
@@ -75,7 +73,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
   margin-top: 0.5rem;
 }
 
-/* ELEMENTO 5: Botón admin */
+/* ELEMENTO 6: Botón admin */
 #btn-admin {
   width: 100%; padding: 16px 20px; border-radius: 50px;
   font-size: 15px; font-weight: 500; cursor: pointer;
@@ -85,7 +83,7 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
   display: flex; align-items: center; justify-content: space-between;
 }
 
-/* ELEMENTO 6: Pie de página */
+/* ELEMENTO 7: Pie de página */
 #home-footer {
   font-size: 12px; color: rgba(255,255,255,0.4);
   text-align: center; width: 100%;
