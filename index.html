@@ -152,15 +152,28 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
 <div class="screen active" id="home">
   <img id="home-bg" src="Fondo asistente.webp" alt="" />
   <div id="home-content">
-    <h1 id="home-name-text">¡Hola, <span id="home-name">viajero</span>! Soy <strong>QWERTY</strong></h1>
+
+    <!-- ELEMENTO 1: Saludo principal -->
+    <h1 id="home-greeting">¡Hola, <span id="home-name">viajero</span>! Soy <strong>QWERTY</strong></h1>
+
+    <!-- ELEMENTO 2: Subtítulo -->
     <p id="home-subtitle">Tu asistente de viaje inteligente ✈️</p>
+
+    <!-- ELEMENTO 3: Indicador de estado -->
     <div id="home-status">
       <span id="home-status-dot"></span>
       Listo para ayudarte
     </div>
-    <button class="home-btn client" onclick="show('pin-screen')" style="margin-top:0.5rem;">Soy viajero →</button>
-    <button class="home-btn admin" onclick="show('admin-login')">👤 Acceso administrador →</button>
+
+    <!-- ELEMENTO 4: Botón viajero -->
+    <button id="btn-viajero" onclick="show('pin-screen')">Soy viajero →</button>
+
+    <!-- ELEMENTO 5: Botón admin -->
+    <button id="btn-admin" onclick="show('admin-login')">👤 Acceso administrador →</button>
+
+    <!-- ELEMENTO 6: Pie de página -->
     <div id="home-footer">🧳 Asistente de viaje inteligente</div>
+
   </div>
 </div>
 
