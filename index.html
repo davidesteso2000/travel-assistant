@@ -132,11 +132,21 @@ body { font-family: system-ui, sans-serif; background: var(--sand); max-width: 4
 <body>
 
 <div class="screen active" id="home">
-  <div class="home-logo">🧳</div>
-  <div class="home-title">Bienvenido</div>
-  <div class="home-sub">¿Cómo quieres acceder?</div>
-  <button class="home-btn client" onclick="show('pin-screen')">Soy viajero</button>
-  <button class="home-btn admin" onclick="show('admin-login')">Acceso administrador</button>
+  <div class="screen active" id="home" style="position:relative;overflow:hidden;padding:0;justify-content:flex-end;">
+  <img src="Fondo asistente.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" />
+  <div style="position:relative;z-index:1;width:100%;padding:2rem 1.5rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;">
+    <h1 style="font-size:26px;font-weight:800;color:#1C1917;text-align:center;margin:0;">
+      ¡Hola! Soy <span style="color:#C4774A;" id="home-name">tu asistente</span>
+    </h1>
+    <p style="font-size:14px;color:#6B6560;text-align:center;margin:0;">Tu asistente de viaje inteligente ✈️</p>
+    <div style="display:flex;align-items:center;gap:6px;background:white;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;color:#1C1917;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <span style="width:8px;height:8px;background:#22C55E;border-radius:50%;display:inline-block;"></span>
+      Listo para ayudarte
+    </div>
+    <button class="home-btn client" onclick="show('pin-screen')" style="margin-top:0.5rem;">Soy viajero →</button>
+    <button class="home-btn admin" onclick="show('admin-login')">👤 Acceso administrador →</button>
+    <div style="font-size:11px;color:#6B6560;margin-top:0.5rem;">🧳 Asistente de viaje inteligente</div>
+  </div>
 </div>
 
 <div class="screen" id="pin-screen">
@@ -277,6 +287,9 @@ let isNewTrip = lastPin !== pin;
 let anthropicKey = '';
 
   function show(id) {
+    const name = localStorage.getItem('travel_user_name');
+const el = document.getElementById('home-name');
+if (el) el.textContent = name ? name : 'tu asistente';
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
