@@ -523,8 +523,8 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     const area = document.getElementById('messages');
     const row = document.createElement('div');
     row.className = 'msg-row bot';
-    row.innerHTML = `<img class="msg-avatar" src="cabeza.webp" style="object-fit:cover;" />`;
-    area.appendChild(row); area.scrollTop = area.scrollHeight;
+row.innerHTML = \<img class="msg-avatar" src="cabeza.webp" style="object-fit:cover;" /><div class="bubble bot">${html}</div>`;`
+  area.appendChild(row); area.scrollTop = area.scrollHeight;
   }
   function addUserMessage(text) {
     const area = document.getElementById('messages');
