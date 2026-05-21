@@ -149,31 +149,57 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
 #pin-security { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 0.25rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
 /* ============ CHAT ============ */
+
+/* ELEMENTO 1: Fondo general del chat */
 #chat-screen { background: var(--sand); }
+
+/* ELEMENTO 2: Header - barra superior */
 .chat-header { background: var(--white); border-bottom: 1px solid var(--sand-dark); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+/* ELEMENTO 3: Header - avatar robot */
 .header-avatar { width: 42px; height: 42px; border-radius: 14px; object-fit: cover; flex-shrink: 0; background: black; }
 .header-info { flex: 1; }
+
+/* ELEMENTO 4: Header - nombre QWERTY */
 .header-name { font-size: 15px; font-weight: 600; }
+
+/* ELEMENTO 5: Header - nombre del viaje */
 .header-trip { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
+
+/* ELEMENTO 6: Header - botón salir */
 .header-exit { background: none; border: none; font-size: 14px; font-weight: 600; color: #F3B04D; cursor: pointer; font-family: inherit; }
-  .messages-area { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+
+/* ELEMENTO 7: Área de mensajes */
+.messages-area { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
 .messages-area::-webkit-scrollbar { width: 0; }
 .msg-row { display: flex; align-items: flex-end; gap: 8px; animation: msgIn 0.3s ease; }
 .msg-row.user { flex-direction: row-reverse; }
 @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ELEMENTO 8: Avatar del bot en mensajes */
 .msg-avatar { width: 28px; height: 28px; border-radius: 10px; background: var(--terra); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+
+/* ELEMENTO 9: Burbuja del bot */
 .bubble { max-width: 78%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.6; }
 .bubble.bot { background: var(--white); border-bottom-left-radius: 6px; border: 1px solid var(--sand-dark); color: var(--ink); }
+
+/* ELEMENTO 10: Burbuja del usuario */
 .bubble.user { background: var(--terra); border-bottom-right-radius: 6px; color: white; }
+
+/* ELEMENTO 11: Indicador de escritura */
 .typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px !important; }
 .typing-dot { width: 7px; height: 7px; background: var(--sand-dark); border-radius: 50%; animation: typing 1.2s infinite; }
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes typing { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+/* ELEMENTO 12: Barra de escritura */
 .chat-input-area { background: var(--white); border-top: 1px solid var(--sand-dark); padding: 12px 1rem; display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0; }
 .chat-input { flex: 1; border: 1.5px solid var(--sand-dark); border-radius: 22px; padding: 10px 16px; font-size: 14px; color: var(--ink); background: var(--sand); outline: none; resize: none; line-height: 1.4; max-height: 100px; font-family: inherit; }
 .chat-input:focus { border-color: var(--terra); }
 .chat-input::placeholder { color: var(--ink-muted); }
+
+/* ELEMENTO 13: Botón enviar */
 .send-btn { width: 44px; height: 44px; background: var(--terra); border: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 .send-btn:active { transform: scale(0.92); background: var(--terra-dark); }
 .send-icon { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
