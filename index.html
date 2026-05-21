@@ -523,7 +523,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     const area = document.getElementById('messages');
     const row = document.createElement('div');
     row.className = 'msg-row bot';
-    row.innerHTML = `<div class="msg-avatar">🧳</div><div class="bubble bot">${html}</div>`;
+    row.innerHTML = `<img class="msg-avatar" src="cabeza.webp" style="object-fit:cover;" />`;
     area.appendChild(row); area.scrollTop = area.scrollHeight;
   }
   function addUserMessage(text) {
@@ -537,8 +537,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     const area = document.getElementById('messages');
     const row = document.createElement('div');
     row.className = 'msg-row bot'; row.id = 'typing';
-    row.innerHTML = `<div class="msg-avatar">🧳</div><div class="bubble bot typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-    area.appendChild(row); area.scrollTop = area.scrollHeight;
+row.innerHTML = `<img class="msg-avatar" src="cabeza.webp" style="object-fit:cover;" /><div class="bubble bot">${html}</div>`;    area.appendChild(row); area.scrollTop = area.scrollHeight;
   }
   function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
   function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
