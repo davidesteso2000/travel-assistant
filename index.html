@@ -151,7 +151,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
 /* ============ CHAT ============ */
 #chat-screen { background: var(--sand); }
 .chat-header { background: var(--white); border-bottom: 1px solid var(--sand-dark); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.header-avatar { width: 42px; height: 42px; background: var(--terra); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.header-avatar { width: 42px; height: 42px; background: black; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
 .header-info { flex: 1; }
 .header-name { font-size: 15px; font-weight: 600; }
 .header-trip { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
@@ -313,7 +313,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
 <!-- ============ CHAT ============ -->
 <div class="screen" id="chat-screen">
   <div class="chat-header">
-    <div class="header-avatar">🧳</div>
+    <img class="header-avatar" src="cabeza.webp" style="object-fit: cover;" />
     <div class="header-info">
       <div class="header-name">Asistente de viaje</div>
       <div class="header-trip" id="chat-trip-name"></div>
