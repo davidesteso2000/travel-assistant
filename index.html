@@ -204,6 +204,9 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
 .send-btn:active { transform: scale(0.92); background: var(--terra-dark); }
 .send-icon { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
+/* ELEMENTO 14: Texto de aviso */
+#chat-disclaimer { font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; padding: 4px 1rem; }
+
 /* ============ ADMIN LOGIN ============ */
 #admin-login { align-items: center; justify-content: center; padding: 2rem; }
 .login-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
@@ -347,6 +350,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     <button class="header-exit" onclick="exitChat()">Salir</button>
   </div>
   <div class="messages-area" id="messages"></div>
+  <div id="chat-disclaimer">🤖 QWERTY puede cometer errores. Verifica la información importante.</div>
   <div class="chat-input-area">
     <textarea class="chat-input" id="msg-input" placeholder="Escribe tu pregunta..." rows="1"
       onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
