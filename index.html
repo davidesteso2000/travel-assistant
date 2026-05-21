@@ -401,6 +401,19 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     </div>
   </div>
 </div>
+  <div class="modal-bg" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">Editar viaje</div>
+    <label class="field-label">Nombre del viaje</label>
+    <input class="field-input" id="edit-name-input" type="text" />
+    <label class="field-label">PIN de acceso (4 dígitos)</label>
+    <input class="field-input" id="edit-pin-input" type="text" maxlength="4" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveEditTrip()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -621,8 +634,9 @@ ${context}`
         <div class="trip-meta">${t.documents ? t.documents.length : 0} documento${t.documents && t.documents.length !== 1 ? 's' : ''}</div>
         <div class="trip-pin">🔑 PIN: ${t.pin}</div>
         <div class="trip-actions">
-          <button class="btn-sm" onclick="openDetail('${t.id}','${t.name}','${t.pin}')">📂 Documentos</button>
-          <button class="btn-sm danger" onclick="deleteTrip('${t.id}')">🗑 Eliminar</button>
+<button class="btn-sm" onclick="openDetail('${t.id}','${t.name}','${t.pin}')">📂 Documentos</button>
+<button class="btn-sm" onclick="openEditTrip('${t.id}','${t.name}','${t.pin}')">✏️ Editar</button>
+<button class="btn-sm danger" onclick="deleteTrip('${t.id}')">🗑 Eliminar</button>
         </div>
       </div>
     `).join('');
@@ -634,6 +648,29 @@ ${context}`
     document.getElementById('modal-new').classList.add('open');
   }
   function closeModal() { document.getElementById('modal-new').classList.remove('open'); }
+
+  let editingTripId = null;
+
+function openEditTrip(id, name, pin) {
+  editingTripId = id;
+  document.getElementById('edit-name-input').value = name;
+  document.getElementById('edit-pin-input').value = pin;
+  document.getElementById('modal-edit').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('modal-edit').classList.remove('open');
+}
+
+async function saveEditTrip() {
+  const name = document.getElementById('edit-name-input').value.trim();
+  const pin = document.getElementById('edit-pin-input').value.trim();
+  if (!name || pin.length !== 4 || isNaN(pin)) { alert('Introduce un nombre y un PIN de 4 dígitos.'); return; }
+  const { error } = await db.from('trips').update({ name, pin }).eq('id', editingTripId);
+  if (error) { alert('Error al guardar los cambios.'); return; }
+  closeEditModal();
+  loadTrips();
+}
 
   async function saveTrip() {
     const name = document.getElementById('trip-name-input').value.trim();
