@@ -508,8 +508,10 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     const hasDocs = docs && docs.length > 0;
     if (!anthropicKey) {
       addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. El sistema aún no está configurado. Contacta con el administrador.`);
-    } else if (!hasDocs) {
-      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
+    } else if (!hasDocs && userName) {
+      addBotMessage(`¡Hola de nuevo, ${userName}! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
+    } else if (!hasDocs && !userName) {
+      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
     } else if (userName && !isNewTrip) {
       addBotMessage(`¡Hola de nuevo, ${userName}! 😊 ¿En qué te puedo ayudar hoy?`);
     } else if (userName && isNewTrip) {
