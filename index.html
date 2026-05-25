@@ -496,7 +496,7 @@ function saveName() {
     const name = document.getElementById('name-input').value.trim();
     if (!name) { return; }
     userName = name;
-    localStorage.setItem('travel_user_name_v2', userName);
+    localStorage.setItem('travel_user_name_v3', userName);
     updateHomeName();
     document.getElementById('modal-name').classList.remove('open');
     show('pin-screen');
@@ -709,8 +709,7 @@ ${context}`
         <div class="trip-pin">🔑 PIN: ${t.pin}</div>
         <div class="trip-actions">
 <button class="btn-sm" onclick="openDetail('${t.id}','${t.name}','${t.pin}')">📂 Documentos</button>
-<button class="btn-sm" onclick="openEditTrip('${t.id}','${t.name}','${t.pin}')">✏️ Editar</button>
-<button class="btn-sm danger" onclick="deleteTrip('${t.id}')">🗑 Eliminar</button>
+<button class="btn-sm" onclick="openEditTrip('${t.id}','${t.name}','${t.pin}','${t.expires_at || ''}')">✏️ Editar</button><button class="btn-sm danger" onclick="deleteTrip('${t.id}')">🗑 Eliminar</button>
         </div>
       </div>
     `).join('');
@@ -725,10 +724,11 @@ ${context}`
 
   let editingTripId = null;
 
-function openEditTrip(id, name, pin) {
+function openEditTrip(id, name, pin, expires_at) {
   editingTripId = id;
   document.getElementById('edit-name-input').value = name;
   document.getElementById('edit-pin-input').value = pin;
+  document.getElementById('edit-expires-input').value = expires_at || '';
   document.getElementById('modal-edit').classList.add('open');
 }
 
