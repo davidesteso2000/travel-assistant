@@ -420,7 +420,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
   <!-- ============ MODAL NOMBRE ============ -->
 <div class="modal-bg" id="modal-name">
   <div class="modal">
-    <div class="modal-title">¡Bienvenido! ¿Cómo te llamas?</div>
+    <div class="modal-title">¡Bienvenid@! ¿Cómo te llamas?</div>
     <p style="font-size:13px; color:var(--ink-muted); margin-bottom:1rem;">Es solo para que el trato sea más cercano. No guardamos ningún dato personal.</p>
     <input class="field-input" id="name-input" type="text" placeholder="Tu nombre" />
     <div class="modal-actions">
@@ -547,18 +547,14 @@ function saveName() {
     const hasDocs = docs && docs.length > 0;
     if (!anthropicKey) {
       addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. El sistema aún no está configurado. Contacta con el administrador.`);
-    } else if (!hasDocs && userName) {
-      addBotMessage(`¡Hola de nuevo, ${userName}! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
-    } else if (!hasDocs && !userName) {
-      addBotMessage(`¡Hola! Soy tu asistente para <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
+    } else if (!hasDocs) {
+      addBotMessage(`¡Hola, ${userName}! Soy tu asistente para <strong>${trip.name}</strong>. Aún no tengo información cargada sobre este viaje, pero pronto estará disponible.`);
     } else if (userName && !isNewTrip) {
       addBotMessage(`¡Hola de nuevo, ${userName}! 😊 ¿En qué te puedo ayudar hoy?`);
     } else if (userName && isNewTrip) {
       localStorage.setItem('travel_last_pin', pin);
       lastPin = pin;
-      addBotMessage(`¡Hola de nuevo, ${userName}! 😊 Bienvenido al viaje <strong>${trip.name}</strong>. ¿En qué te puedo ayudar?`);
-    } else {
-      addBotMessage(`¡Hola! Soy tu asistente para el viaje <strong>${trip.name}</strong>. ¿Cómo te llamas? Así puedo atenderte de forma más personal 😊`);
+      addBotMessage(`¡Hola de nuevo, ${userName}! 😊 Bienvenid@ al viaje <strong>${trip.name}</strong>. ¿En qué te puedo ayudar?`);
     }
   }
 
