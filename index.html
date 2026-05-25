@@ -425,6 +425,8 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     <input class="field-input" id="trip-name-input" type="text" placeholder="Ej: Roma — Julio 2025" />
     <label class="field-label">PIN de acceso (4 dígitos)</label>
     <input class="field-input" id="trip-pin-input" type="text" maxlength="4" placeholder="Ej: 3812" />
+    <label class="field-label">Fecha de caducidad</label>
+<input class="field-input" id="trip-expires-input" type="date" />
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
       <button class="btn-save" onclick="saveTrip()">Crear viaje</button>
@@ -438,6 +440,8 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     <input class="field-input" id="edit-name-input" type="text" />
     <label class="field-label">PIN de acceso (4 dígitos)</label>
     <input class="field-input" id="edit-pin-input" type="text" maxlength="4" />
+    <label class="field-label">Fecha de caducidad</label>
+<input class="field-input" id="edit-expires-input" type="date" />
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
       <button class="btn-save" onclick="saveEditTrip()">Guardar</button>
@@ -491,7 +495,13 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     if (pin.length < 4) { document.getElementById('pin-error').textContent = 'Introduce 4 dígitos'; return; }
     document.getElementById('pin-error').textContent = 'Verificando...';
     const { data } = await db.from('trips').select('*').eq('pin', pin).single();
-    if (data) { openChat(data); }
+    if (data) {
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        document.getElementById('pin-error').textContent = 'Este viaje ha caducado.';
+        pin = ''; updateDots(); return;
+      }
+      openChat(data);
+    }
     else { document.getElementById('pin-error').textContent = 'Código incorrecto, inténtalo de nuevo'; pin = ''; updateDots(); }
   }
 
@@ -697,18 +707,20 @@ function closeEditModal() {
 async function saveEditTrip() {
   const name = document.getElementById('edit-name-input').value.trim();
   const pin = document.getElementById('edit-pin-input').value.trim();
+  const expires_at = document.getElementById('edit-expires-input').value || null;
   if (!name || pin.length !== 4 || isNaN(pin)) { alert('Introduce un nombre y un PIN de 4 dígitos.'); return; }
-  const { error } = await db.from('trips').update({ name, pin }).eq('id', editingTripId);
+  const { error } = await db.from('trips').update({ name, pin, expires_at }).eq('id', editingTripId);
   if (error) { alert('Error al guardar los cambios.'); return; }
   closeEditModal();
   loadTrips();
 }
 
-  async function saveTrip() {
+async function saveTrip() {
     const name = document.getElementById('trip-name-input').value.trim();
     const pin = document.getElementById('trip-pin-input').value.trim();
+    const expires_at = document.getElementById('trip-expires-input').value || null;
     if (!name || pin.length !== 4 || isNaN(pin)) { alert('Introduce un nombre y un PIN de 4 dígitos.'); return; }
-    const { error } = await db.from('trips').insert({ name, pin });
+    const { error } = await db.from('trips').insert({ name, pin, expires_at });
     if (error) { alert(error.message.includes('unique') ? 'Ese PIN ya está en uso.' : 'Error al crear el viaje.'); return; }
     closeModal(); loadTrips();
   }
