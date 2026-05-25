@@ -568,6 +568,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     input.value = ''; input.style.height = 'auto';
     addUserMessage(text);
     chatMessages.push({ role: 'user', content: text });
+    await db.from('messages').insert({ trip_id: currentTrip.id, user_name: userName || 'Desconocido', content: text, role: 'user' });
     if (!userName) {
       const nombreMatch = text.match(/(?:me llamo|soy|mi nombre es|llámame)\s+(\w+)/i);
       const nombre = nombreMatch ? nombreMatch[1] : (text.split(' ').length <= 2 ? text.trim() : null);
