@@ -509,6 +509,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
     const isNewTrip = lastPin !== pin;
     currentTrip = trip;
     chatMessages = [];
+    await db.from('sessions').insert({ trip_id: trip.id, user_name: userName || 'Desconocido' });
     document.getElementById('chat-trip-name').textContent = trip.name;
     document.getElementById('messages').innerHTML = '';
     show('chat-screen');
