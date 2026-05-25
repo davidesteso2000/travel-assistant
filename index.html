@@ -475,7 +475,7 @@ min-height: 100vh; padding: 2rem 4.5rem 1.5rem;
   let currentTrip = null;
   let pin = '';
   let chatMessages = [];
-  let userName = localStorage.getItem('travel_user_name_v2') || '';
+  let userName = localStorage.getItem('travel_user_name_v3') || '';
   let lastPin = localStorage.getItem('travel_last_pin') || '';
   let anthropicKey = '';
 
@@ -496,7 +496,7 @@ function askName() {
     const name = document.getElementById('name-input').value.trim();
     if (!name) { return; }
     userName = name;
-    localStorage.setItem('travel_user_name_v2', userName);
+    localStorage.setItem('travel_user_name_v3', userName);
     updateHomeName();
     document.getElementById('modal-name').classList.remove('open');
     show('pin-screen');
@@ -602,7 +602,7 @@ function askName() {
       const nombre = nombreMatch ? nombreMatch[1] : (text.split(' ').length <= 2 ? text.trim() : null);
       if (nombre) {
         userName = nombre;
-        localStorage.setItem('travel_user_name_v2', userName);
+        localStorage.setItem('travel_user_name_v3', userName);
         updateHomeName();
       }
     }
